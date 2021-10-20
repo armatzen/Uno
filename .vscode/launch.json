@@ -8,7 +8,7 @@
             "type": "pwa-chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "C:/proyectos/git/procesos2122/procesos2122/cliente/index.html",
+            "url": "C:/proyectos/git/Uno/cliente/index.html",
             "webRoot": "${workspaceFolder}"
         }
     ]

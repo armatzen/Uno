@@ -5,7 +5,7 @@ var server=require("http").Server(app);
 var bodyParser = require("body-parser");
 var modelo=require("./servidor/modelo.js");
 
-var juego=new modelo.Juego();
+var juego=new Juego();
 
 app.set('port',process.env.PORT || 5000);
 

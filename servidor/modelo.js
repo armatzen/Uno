@@ -392,3 +392,5 @@ function Comodin4(valor){
 //     ju3.manoInicial();
 //     partida.cartaInicial();
 // }
+
+module.exports.Juego=Juego;

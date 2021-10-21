@@ -1,4 +1,4 @@
-function clienteRest(){
+function ClienteRest(){
     this.agregarJugador=function(nick){
         $.getJSON("/agregarJugador/"+nick,function(data){
             //Se ejecuta cuando conteste el servidor
@@ -7,6 +7,7 @@ function clienteRest(){
         //Sigue la ejecucion sin esperar
         //mostrar una ruleta
     }
+    
     this.crearPartida=function(nick,numJug){
 
         $.getJSON("/crearPartida/"+nick+"/"+numJug,function(data){

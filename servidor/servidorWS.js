@@ -15,31 +15,42 @@ function ServidorWS(){
 
 			socket.on("crearPartida",function(num,nick){
 				var ju1=juego.usuarios[nick];
-				var res={codigo:-1};
-				var partida=ju1.crearPartida(num);
-				console.log("Nueva partida de "+nick +" codigo: "+ju1.codigoPartida);
-				res.codigo=ju1.codigoPartida;
-				socket.join(res.codigo);
-				cli.enviarAlRemitente(socket,"partidaCreada",res);
+				if(ju1){
+					var res={codigo:-1};
+					var partida=ju1.crearPartida(num);
+					console.log("Nueva partida de "+nick +" codigo: "+ju1.codigoPartida);
+					res.codigo=ju1.codigoPartida;
+					socket.join(res.codigo);
+					cli.enviarAlRemitente(socket,"partidaCreada",res);
+				}
+				else{
+					cli.enviarAlRemitente(socket,"fallo","El usuario no existe");
+				}
 			});
 
 			socket.on("unirAPartida",function(codigo,nick){
 				var ju1=juego.usuarios[nick];
 				var res={codigo:-1};
-				ju1.unirAPartida(codigo);
-				console.log("Jugador "+nick +" se une a partida codigo: "+ju1.codigoPartida);
-				res.codigo=ju1.codigoPartida;
-				if (res.codigo!=-1){
-					socket.join(res.codigo);
-					var partida=juego.partidas[codigo];
-					cli.enviarAlRemitente(socket,"unidoAPartida",res);
-					if (partida.fase.nombre=="jugando"){
-						cli.enviarATodos(io,codigo,"pedirCartas",{});
+				if(ju1){
+					var partida = ju1.unirAPartida(codigo);
+					console.log("Jugador "+nick +" se une a partida codigo: "+ju1.codigoPartida);
+					res.codigo=ju1.codigoPartida;
+					if (res.codigo!=-1){
+						socket.join(res.codigo);
+						var partida=juego.partidas[codigo];
+						cli.enviarAlRemitente(socket,"unidoAPartida",res);
+						if (partida.fase.nombre=="jugando"){
+							cli.enviarATodos(io,codigo,"pedirCartas",{});
+						}
 					}
+					else{
+						cli.enviarAlRemitente(socket,"fallo",res);	
+					}	
 				}
 				else{
-					cli.enviarAlRemitente(socket,"fallo",res);	
+					cli.enviarAlRemitente(socket,"fallo","El usuario no existe");
 				}
+					
 			});
 
 			socket.on("manoInicial",function(nick){

@@ -59,6 +59,9 @@ function ClienteWS(){
             cli.asignarTurno();
         })
         this.socket.on("cartajug")
+        this.socket.on("fallo",function(data){
+            console.log(data);
+        })
     }
     
     this.conectar();

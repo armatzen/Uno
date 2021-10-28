@@ -75,11 +75,12 @@ function Jugador(nick,juego){
     this.mano=[];
     this.codigoPartida;
     this.puntos=0;
+
     this.crearPartida=function(numJug){
         return this.juego.crearPartida(nick,numJug);
     }
     this.unirAPartida=function(codigo){
-        this.juego.unirAPartida(codigo,nick);
+        return this.juego.unirAPartida(codigo,nick);
     }
     this.robar=function(num){
         var partida=this.obtenerPartida(this.codigoPartida);
@@ -128,7 +129,7 @@ function Partida(codigo,jugador,numJug){
     this.cartaActual;
 
     this.unirAPartida=function(jugador){
-        this.fase.unirAPartida(this,jugador);
+        return this.fase.unirAPartida(this,jugador);
     }
     this.puedeUnirAPartida=function(jugador){
         this.jugadores[jugador.nick]=jugador;

@@ -10,12 +10,10 @@ var bodyParser = require("body-parser");
 var modelo=require("./servidor/modelo.js");
 var ssrv = require("./servidor/servidorWS.js");
 
-<<<<<<< HEAD
+
 var juego=new modelo.Juego();
 var servidorWS=new ssrv.ServidorWS();
-=======
-var juego=new Juego();
->>>>>>> 3b79b8b2cfa04bb682da48a0c8507b861854946a
+
 
 app.set('port',process.env.PORT || 5000);
 
@@ -69,12 +67,9 @@ app.get("/obtenerListaPartidas",function(request,response){
 
 http.listen(app.get('port'),function(){
 	console.log("La app NodeJS se está ejecutando en el puerto ",app.get("port"));
-<<<<<<< HEAD
+
 });
 
 
 //lanzar el servidorWS
 servidorWS.lanzarServidorWS(io,juego);
-=======
-})
->>>>>>> 3b79b8b2cfa04bb682da48a0c8507b861854946a

@@ -1,4 +1,3 @@
-
 function Juego(){
     this.usuarios={};
     this.partidas={};
@@ -256,10 +255,7 @@ function Partida(codigo,jugador,numJug){
 function Derecha(){
     this.nombre="derecha";
     this.pasarTurno=function(partida){
-        //ver el nick del que tiene el turno
-        //calcular el indice en el array ordenTurno
-        //sumarle 1 al indice MOD longitud del array
-        //asignarle el turno al nuevo jugador
+
         var nick=partida.turno.nick;            
         var indice=partida.ordenTurno.indexOf(nick);            
         var siguiente=(indice+1)%(Object.keys(partida.jugadores).length);
@@ -299,6 +295,7 @@ function Jugando(){
     this.nombre="jugando";
     this.unirAPartida=function(partida,jugador){
         console.log("La partida ya ha comenzado");
+        jugador.codigoPartida=-1;
     }
     this.jugarCarta=function(carta,nick,partida){
         partida.puedeJugarCarta(carta,nick);
@@ -311,6 +308,7 @@ function Final(){
     this.nombre="final";
     this.unirAPartida=function(partida,jugador){
         console.log("La partida ha terminado");
+        jugador.codigoPartida=-1;
     }
     this.jugarCarta=function(carta,nick,partida){
         console.log("La partida ya ha terminado");

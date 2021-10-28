@@ -18,6 +18,12 @@ function ClienteRest(){
         //mostrar una ruleta
     }
 
+    this.obtenerListaPartidas=function(){
+		$.getJSON("/obtenerListaPartidas",function(data){
+			console.log(data);
+		})
+	}
+
     
 
 }

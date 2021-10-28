@@ -1,11 +1,17 @@
 var fs=require("fs");
 var express=require("express");
 var app=express();
-var server=require("http").Server(app);
+var http=require("http").Server(app);
+var { Server } = require("socket.io");
+var io = new Server(http);
 var bodyParser = require("body-parser");
+
+
 var modelo=require("./servidor/modelo.js");
+var ssrv = require("./servidor/servidorWS.js");
 
 var juego=new modelo.Juego();
+var servidorWS=new ssrv.ServidorWS();
 
 app.set('port',process.env.PORT || 5000);
 
@@ -34,12 +40,33 @@ app.get("/crearPartida/:num/:nick",function(request,response){
 		res.codigo=ju1.codigoPartida;
 	}
 	response.send(res);
-})
+});
 
 //unir a partida
+app.get("/unirAPartida/:codigo/:nick",function(request,response){
+	var nick=request.params.nick;
+	var codigo=request.params.codigo;
+	var ju1=juego.usuarios[nick];
+	var res={nick:-1};
+	if (ju1){
+		ju1.unirAPartida(codigo);
+		console.log("Jugador: "+nick +"se ha unido a la partida: "+ju1.codigoPartida);
+	}
+});
 
 //obtener lista de partidas
+app.get("/obtenerListaPartidas",function(request,response){
 
-app.listen(app.get('port'),function(){
+	if (juego){
+		var lista=juego.obtenerTodasPartidas();
+		response.send(lista);
+	}
+});
+
+http.listen(app.get('port'),function(){
 	console.log("La app NodeJS se está ejecutando en el puerto ",app.get("port"));
-})
+});
+
+
+//lanzar el servidorWS
+servidorWS.lanzarServidorWS(io,juego);

@@ -59,7 +59,7 @@ function ServidorWS(){
                 cli.enviarAlRemitente(socket,"cartajug",carta);
                 cli.enviarAlRemitente(socket,"mano",ju1.mano);
                 if(partida.fase.nombre=="final"){
-                    cli.enviarATodos(io,codigo,"final",{"ganador":nickTurnoiuh});
+                    cli.enviarATodos(io,codigo,"final",{"ganador":nickTurno});
                 }
             });
 		})

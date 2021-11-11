@@ -29,9 +29,24 @@ function ClienteWS(){
         this.socket.emit("jugarCarta",this.nick,num);
     }
 
-    this.meToca=function(){
+    this.robarCarta=function(num){
+        this.socket.emit("robarCarta",this.nick,num);
+    }
+
+    this.pasarTurno=function(){
+        this.socket.emit("pasarTurno",this.nick);
         
     }
+    this.oabandonarPartida=function(){
+        this.socket.emit("abandonarPartida",this.nick);
+    }
+    this.cerrarSesion=function(){
+        this.socket.emit("cerrarSesion",this.nick);
+    }
+
+
+
+
 
     //Servidor ws del cliente
     this.servidorWSCliente=function(){
@@ -47,20 +62,48 @@ function ClienteWS(){
             console.log(data);
             cli.codigo=data.codigo;
         })
+        this.socket.on("nuevaPartida", function(data){
+            if(!cli.codigo && cli.nick){
+                ui.mostrarListaPartidas(data);
+            }
+        })
         this.socket.on("pedirCartas",function(data){
             cli.manoInicial();
         })
         this.socket.on("mano",function(data){
             console.log(data);
-            //cli.meToca();
+            iu.mostrarMano(data);
         })
         this.socket.on("turno",function(data){
             console.log(data);
-            cli.asignarTurno();
+            iu.mostrarCartaActual(data.cartaActual);
         })
-        this.socket.on("cartajug")
         this.socket.on("fallo",function(data){
             console.log(data);
+        })
+        this.socket.on("final",function(data){
+            if(data.ganador == cli.nick){
+                iu.mostrarModal("Ganador")
+            }
+            else{
+                iu.mostrarModal("Perdedor")
+            }
+            
+            console.log(data);
+
+        });
+        this.socket.on("jugadorAbandona",function(){
+            iu.mostrarModal("Un Jugador abandona la partida");
+            iu.limpiar();
+            iu.mostrarHome({nick:cli.nick});
+            cli.codigo="";
+        });
+        this.socket.on("usuarioEliminado",function(){
+            cli.nick="";
+            cli.codigo="";
+            $.removeCookie("nick");
+            iu.limpiar();
+            iu.mostrarAgregarJugador();
         })
     }
     

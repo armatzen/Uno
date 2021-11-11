@@ -13,6 +13,7 @@ describe("El juego del UNO...", function() {
   it("Condiciones iniciales",function(){
       expect(juego.numeroPartidas()).toEqual(0);
       expect(juego.obtenerTodasPartidas().length).toEqual(0);
+      expect(juego.obtenerPartidasDisponibles().length).toEqual(0);
   });
 
   describe("Ana crea una partida de 2 jugadores...", function() {
@@ -66,6 +67,7 @@ describe("El juego del UNO...", function() {
       expect(partida.codigo).toBeDefined();
       expect(partida.numeroJugadores()).toEqual(1);
       expect(juego.obtenerTodasPartidas().length).toEqual(1);
+      expect(juego.obtenerPartidasDisponibles().length).toEqual(1);
       expect(partida.fase.nombre).toBe("inicial");
     });
 
@@ -81,6 +83,7 @@ describe("El juego del UNO...", function() {
       ju2.unirAPartida(partida.codigo);
       expect(partida.numeroJugadores()).toEqual(2);
       expect(partida.fase.nombre).toBe("jugando");
+      expect(juego.obtenerPartidasDisponibles().length).toEqual(0);
     });
 
     it("Pepe se une, Luis intenta unirse y no puede",function(){
@@ -111,6 +114,18 @@ describe("El juego del UNO...", function() {
       expect(partida.turno.nick).toEqual("ana");
       expect(partida.direccion.nombre).toEqual("derecha");
       expect(partida.cartaActual).toBeDefined();
+    });
+
+    it("Ana roba una carta",function(){
+      expect(ju1.mano.length).toEqual(3);
+      ju1.robar(1);
+      expect(ju1.mano.length).toEqual(4);
+    })
+
+    it("Ana abndona partida",function(){
+      expect(partida.fase.nombre).toBe("jugando");
+      ju1.abandonarPartida();
+      expect(partida.fase.nombre).toBe("final");
     })
   });
 });

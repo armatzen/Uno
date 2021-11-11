@@ -19,12 +19,15 @@ function Juego(){
     this.crearPartida=function(nick,numJug){
         var codigo="-1";
         var jugador=this.usuarios[nick];
-        codigo=this.obtenerCodigo();
-        while (this.partidas[codigo]){
+        var partida;
+        if(2<=numJug && numJug<=10){
             codigo=this.obtenerCodigo();
-        };
-        var partida=new Partida(codigo,jugador,numJug);
-        this.partidas[codigo]=partida;
+            while (this.partidas[codigo]){
+                codigo=this.obtenerCodigo();
+            };
+            partida=new Partida(codigo,jugador,numJug);
+            this.partidas[codigo]=partida;
+        }
 
         return partida;
     }
@@ -34,6 +37,17 @@ function Juego(){
 
         for(each in this.partidas){
             var partida=this.partidas[each];
+            lista.push({propietario:partida.propietario,codigo:each})
+        }
+
+        return lista;
+    }
+    this.obtenerPartidasDisponibles=function(){
+        var lista=[];
+
+        for(each in this.partidas){
+            var partida=this.partidas[each];
+
             lista.push({propietario:partida.propietario,codigo:each})
         }
 
@@ -62,6 +76,10 @@ function Juego(){
     this.numeroPartidas=function(){
 		return Object.keys(this.partidas).length;
 	}
+
+    this.borrarUsuario=function(nick){
+        delete this.usuarios[nick];
+    }
 }
 
 function randomInt(low, high) {
@@ -80,13 +98,15 @@ function Jugador(nick,juego){
         return this.juego.crearPartida(nick,numJug);
     }
     this.unirAPartida=function(codigo){
-        return this.juego.unirAPartida(codigo,nick);
+        this.juego.unirAPartida(codigo,nick);
     }
     this.robar=function(num){
-        var partida=this.obtenerPartida(this.codigoPartida);
-        var robadas=partida.dameCartas(num);
-        //var tmp=this.mano;
-        this.mano=this.mano.concat(robadas);
+            var partida=this.obtenerPartida(this.codigoPartida);
+            if(partida.turno.nick){
+                var robadas=partida.dameCartas(num);
+                this.mano=this.mano.concat(robadas);
+            }
+            
     }
     this.manoInicial=function(){
         var partida=this.obtenerPartida(this.codigoPartida);
@@ -102,8 +122,10 @@ function Jugador(nick,juego){
     }
     this.jugarCarta=function(num){
         var carta=this.mano[num];
-        var partida=this.obtenerPartida(this.codigoPartida);
-        partida.jugarCarta(carta,this.nick);
+        if (carta){
+            var partida=this.obtenerPartida(this.codigoPartida);
+            partida.jugarCarta(carta,this.nick);
+        }
     }
     this.quitarCarta=function(carta){
         var partida=this.obtenerPartida(this.codigoPartida);
@@ -112,6 +134,16 @@ function Jugador(nick,juego){
         if (this.mano.length<=0){
             partida.finPartida();
         }
+    }
+    this.abandonarPartida=function(){
+        var partida=this.obtenerPartida(this.codigoPartida);
+        if(partida){
+            partida.fase=new Final();
+        }
+
+    }
+    this.cerrarSesion=function(){
+        this.juego.borrarUsuario(this.nick);
     }
 }
 
@@ -129,7 +161,7 @@ function Partida(codigo,jugador,numJug){
     this.cartaActual;
 
     this.unirAPartida=function(jugador){
-        return this.fase.unirAPartida(this,jugador);
+        this.fase.unirAPartida(this,jugador);
     }
     this.puedeUnirAPartida=function(jugador){
         this.jugadores[jugador.nick]=jugador;
@@ -323,6 +355,7 @@ function Numero(valor,color){
     this.tipo="numero";
     this.color=color;
     this.valor=valor;
+    this.nombre="numero"+valor;
     this.comprobarEfecto=function(partida){
         console.log("No hay efectos");
     }
@@ -331,7 +364,8 @@ function Numero(valor,color){
 function Cambio(valor,color){
     this.tipo="cambio";
     this.color=color;
-    this.valor=valor;   
+    this.valor=valor;
+    this.nombre="cambio"+color;
     this.comprobarEfecto=function(partida){
         partida.cambiarDireccion();
     }

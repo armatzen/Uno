@@ -65,6 +65,14 @@ app.get("/obtenerListaPartidas",function(request,response){
 	}
 });
 
+app.get("/obtenerPartidasDisponibles",function(request,response){
+
+	if (juego){
+		var lista=juego.obtenerPartidasDisponibles();
+		response.send(lista);
+	}
+});
+
 http.listen(app.get('port'),function(){
 	console.log("La app NodeJS se está ejecutando en el puerto ",app.get("port"));
 

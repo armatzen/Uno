@@ -3,6 +3,17 @@ function ClienteRest(){
         $.getJSON("/agregarJugador/"+nick,function(data){
             //Se ejecuta cuando conteste el servidor
             console.log(data);
+            if(data.nick!=-1){
+                ws.nick=data.nick;
+                //11.11
+                $.cookier("nick",data.nick);
+
+                cli.obtenerPartidasDisponibles();
+            }
+            else{
+                iu.mostrarModal("El nick: "+nick+" esta en uso");
+                iu.mostrarAgregarJugador();
+            }
         })
         //Sigue la ejecucion sin esperar
         //mostrar una ruleta
@@ -21,6 +32,14 @@ function ClienteRest(){
     this.obtenerListaPartidas=function(){
 		$.getJSON("/obtenerListaPartidas",function(data){
 			console.log(data);
+            //iu.mostrarListaPartidas(data);
+		})
+	}
+
+    this.obtenerPartidasDisponibles=function(){
+		$.getJSON("/obtenerPartidasDisponibles",function(data){
+			console.log(data);
+            iu.mostrarPartidasDisponibles(data);
 		})
 	}
 

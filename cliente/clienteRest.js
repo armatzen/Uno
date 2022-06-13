@@ -1,4 +1,47 @@
 function ClienteRest(){
+    this.registrarUsuario=function(email,clave){
+        $.ajax({
+            type:'POST',
+            url:'/registrarUsuario',
+            data:{"email":email,"clave":clave},
+            success:function(data){
+                if (data.email!="nook"){
+                    //mostrarLogin
+                    console.log(data.email);
+                    ws.nick=data.nick;
+                    rest.obtenerListaPartidas();
+                }
+                else{
+                    console.log("No se ha podido registrar")
+                }
+            },
+            //contentType:'application/json',
+            dataType:'json'
+        });
+    }
+
+    this.loginUsuario=function(email,clave){
+        $.ajax({
+            type:'POST',
+            url:'/registrarUsuario',
+            data:{"email":email,"clave":clave},
+            success:function(data){
+                if (data.email!="nook"){
+                    //mostrarLogin
+                    console.log(data.email);
+                    ws.nick=data.nick;
+                    rest.obtenerListaPartidas();
+                }
+                else{
+                    iu.modal("Usuario o clave incorrecto")
+                }
+            },
+            //contentType:'application/json',
+            dataType:'json'
+        });
+    }
+
+
     this.agregarJugador=function(nick){
         $.getJSON("/agregarJugador/"+nick,function(data){
             //Se ejecuta cuando conteste el servidor
@@ -6,9 +49,10 @@ function ClienteRest(){
             if(data.nick!=-1){
                 ws.nick=data.nick;
                 //11.11
-                $.cookier("nick",data.nick);
-
-                cli.obtenerPartidasDisponibles();
+                $.cookie("nick",data.nick);
+                rest.obtenerListaPartidas();
+                iu.mostrarCrearPartida(ws.nick);
+                
             }
             else{
                 iu.mostrarModal("El nick: "+nick+" esta en uso");
@@ -24,6 +68,7 @@ function ClienteRest(){
         $.getJSON("/crearPartida/"+nick+"/"+numJug,function(data){
             //Se ejecuta cuando conteste el servidor
             console.log(data);
+
         })
         //Sigue la ejecucion sin esperar
         //mostrar una ruleta
@@ -43,6 +88,19 @@ function ClienteRest(){
 		})
 	}
 
-    
+    this.obtenerTodosResultados=function(){
+		$.getJSON("/obtenerTodosResultados",function(data){
+			console.log(data);
+            //iu.mostrarListaResultados(data);
+		})
+	}
+
+    this.obtenerResultados=function(nick){
+		$.getJSON("/obtenerResultados/"+nick,function(data){
+			console.log(data);
+            //iu.mostrarListaResultados(data);
+		})
+	}
+
 
 }

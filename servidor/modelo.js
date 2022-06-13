@@ -1,17 +1,64 @@
-function Juego(){
+var cad=require("./cad.js");
+var cf=require("./cifrado.js");
+var moduloEmail=require("./email.js");
+
+function Juego(test){
     this.usuarios={};
     this.partidas={};
+    this.test=test;
+    this.cad;
+
+    this.registrarUsuario=function(email,clave,cb){
+        var ju=this;
+        var claveCifrada=cf.encryptStr(clave,"sEcrEtA");
+        var nick=email;
+        var key=(new Date().valueOf()).toString();
+
+        this.cad.encontrarUsuarioCriterio({email:email},function(usr){
+            if (!usr){
+                ju.cad.insertarUsuario({email:email,clave:claveCifrada,key:key,nick:nick,confirmada:false},function(usu){
+                    cb({email:'ok'});
+                });
+                //enviar email de confirmacion a la cuenta
+                moduloEmail.enviarEmailConfirmacion(email,key);
+            }
+            else{
+                cb({email:"nook"})
+            }
+        })
+    }
+
+    this.loginUsuario=function(email,clave,cb){
+        var ju=this;
+        var nick=email;
+        this.cad.encontrarUsuarioCriterio({email:email},function(usr){
+            if (usr){
+                var clavedesCifrada=cf.decryptStr(usr.clave,'cLaVeSecrEtA');
+                if (clave==clavedesCifrada && usr.confirmada){
+                    cb(null,usr);
+                    ju.agregarJugador(usr.nick);
+                    console.log("Usuario inicia sesión")
+                }
+                else{
+                   cb(null)
+                }
+            }
+            else{
+                cb(null)
+            }
+        })
+    }
+
 
     this.agregarJugador=function(nick){
         var res={nick:-1}; 
-
         if (!this.usuarios[nick]){
             var jugador= new Jugador(nick,this);
             this.usuarios[nick]=jugador;
             res={nick:nick};
         }
         else{
-            console.log("El nick está en uso");
+            console.log("El nick: "+nick+" está en uso");
         }
         return res;
     }
@@ -28,7 +75,7 @@ function Juego(){
             partida=new Partida(codigo,jugador,numJug);
             this.partidas[codigo]=partida;
         }
-
+        
         return partida;
     }
 
@@ -77,10 +124,32 @@ function Juego(){
 		return Object.keys(this.partidas).length;
 	}
 
+    this.obtenerTodosResultados=function(){
+        this.cad.encontrarTodosResultados(function(lista){
+            callback(lista);
+        });
+    }
+
+    this.obtenerResultados=function(criterio,callback){
+        this.cad.encontrarResultadoCriterio(criterio,callback);
+    }
+
+    this.insertarResultado=function(resultado){
+        this.cad.encontrarTodosResultados(resultado,function(res){
+            console.log(res);
+        });
+    }
+
+    
+    if(!test){
+        this.cad=new cad.CAD()
+        this.cad.conectar(function(){});
+    }
+
     this.borrarUsuario=function(nick){
         delete this.usuarios[nick];
     }
-}
+}//jUEGO
 
 function randomInt(low, high) {
 	return Math.floor(Math.random() * (high - low) + low);
@@ -93,6 +162,7 @@ function Jugador(nick,juego){
     this.mano=[];
     this.codigoPartida;
     this.puntos=0;
+    this.estado=new Normal();
 
     this.crearPartida=function(numJug){
         return this.juego.crearPartida(nick,numJug);
@@ -135,15 +205,45 @@ function Jugador(nick,juego){
             partida.finPartida();
         }
     }
+    this.recibeTurno=function(partida){
+        this.estado.recibeTurno(partida,this);
+    }
+    this.bloquear=function(){
+        this.estado=new Bloqueado();
+    }
     this.abandonarPartida=function(){
         var partida=this.obtenerPartida(this.codigoPartida);
         if(partida){
+            //partida.jugadorAbandona();
             partida.fase=new Final();
         }
 
     }
     this.cerrarSesion=function(){
-        this.juego.borrarUsuario(this.nick);
+        delete this.juego.borrarUsuario(this.nick);
+    }
+    this.insertarResultado=function(prop,numJug){
+        var resultado=new Resultado(prop,this.nick,this.puntos,numJug);
+        this.juego.insertarResultado(resultado);
+    }
+}
+
+function Normal(){
+    this.nombre="normal";
+    this.recibeTurno=function(partida,jugador){
+        partida.jugadorPuedeJugar(jugador);
+    }
+
+}
+
+function Bloqueado(){
+    this.nombre="bloqueado";
+    this.recibeTurno=function(partida,jugador){
+        partida.jugadorPuedeJuegar=function(partida,jugador){
+            partida.jugadorPuedeJugar(jugador);
+            jugador.pasarTurno();
+            jugador.estado=new Normal();
+        }
     }
 }
 
@@ -186,10 +286,10 @@ function Partida(codigo,jugador,numJug){
             this.mazo.push(new Cambio(20,colores[j]));
             //this.mazo.push(new Cambio(20,colores[j]));
         }
-        // for(j=0;j<colores.length;j++){
-        //     this.mazo.push(new Bloqueo(20,colores[j]));
-        //     this.mazo.push(new Bloqueo(20,colores[j]));
-        // }
+        for(j=0;j<colores.length;j++){
+            this.mazo.push(new Bloqueo(20,colores[j]));
+            this.mazo.push(new Bloqueo(20,colores[j]));
+        }
         // for(j=0;j<colores.length;j++){
         //     this.mazo.push(new Mas2(20,colores[j]));
         //     this.mazo.push(new Mas2(20,colores[j]));
@@ -232,6 +332,9 @@ function Partida(codigo,jugador,numJug){
         var nick=this.ordenTurno[0];
         this.turno=this.jugadores[nick];
     }
+    this.jugadorPuedeJugar=function(jugador){
+        this.turno=jugador;
+    }
     this.jugarCarta=function(carta,nick){
         this.fase.jugarCarta(carta,nick,this);
     }
@@ -253,7 +356,8 @@ function Partida(codigo,jugador,numJug){
     this.comprobarCarta=function(carta){
         //comprobar que la carta que se puede jugar la carta, según la que hay en la mesa
         return (this.cartaActual.tipo=="numero" && (this.cartaActual.color==carta.color || this.cartaActual.valor==carta.valor)
-            || this.cartaActual.tipo=="cambio" && (this.cartaActual.color==carta.color || this.cartaActual.tipo == carta.tipo))
+            || this.cartaActual.tipo=="cambio" && (this.cartaActual.color==carta.color || this.cartaActual.tipo == carta.tipo)
+            || this.cartaActual.tipo=="bloqueo" && (this.cartaActual.color==carta.color || this.cartaActual.tipo == carta.tipo))
     }
     this.cartaInicial=function(){
         this.cartaActual=this.asignarUnaCarta();
@@ -268,7 +372,8 @@ function Partida(codigo,jugador,numJug){
     }
     this.finPartida=function(){
         this.fase=new Final();
-        this.calcularPuntos()
+        this.calcularPuntos();
+        this.turno.insertarResultado(this.propietario,this.numJug);
     }
     this.calcularPuntos=function(){
         var suma=0;
@@ -280,6 +385,12 @@ function Partida(codigo,jugador,numJug){
         this.turno.puntos=suma;
     }
 
+    this.bloquearSiguiente=function(){
+        //obtener quen es el siguiente jugador
+        var jugador=this.direccion.obtenerSiguiente(this);
+        jugador.bloquear();
+    }
+
     this.crearMazo();
     this.unirAPartida(jugador);
 } //fin objeto Partida
@@ -288,11 +399,18 @@ function Partida(codigo,jugador,numJug){
 function Derecha(){
     this.nombre="derecha";
     this.pasarTurno=function(partida){
-
         var nick=partida.turno.nick;            
         var indice=partida.ordenTurno.indexOf(nick);            
         var siguiente=(indice+1)%(Object.keys(partida.jugadores).length);
-        partida.turno=partida.jugadores[partida.ordenTurno[siguiente]];
+        var jugador=partida.jugadores[partida.ordenTurno[siguiente]];
+        jugador.recibeTurno(partida);
+    }
+    this.obtenerSiguiente=function(partida){
+        var nick=partida.turno.nick;            
+        var indice=partida.ordenTurno.indexOf(nick);            
+        var siguiente=(indice+1)%(Object.keys(partida.jugadores).length); //probar indice +2
+        var jugador=partida.jugadores[partida.ordenTurno[siguiente]];
+        return jugador;
     }
 }
 
@@ -303,7 +421,16 @@ function Izquierda(){
         var indice=partida.ordenTurno.indexOf(nick);            
         var siguiente=(indice-1)%(Object.keys(partida.jugadores).length);
         if (siguiente<0) {siguiente=Object.keys(partida.jugadores).length-1}
-        partida.turno=partida.jugadores[partida.ordenTurno[siguiente]];
+        var jugador=partida.jugadores[partida.ordenTurno[siguiente]];
+        jugador.recibeTurno(partida);
+    }
+    this.obtenerSiguiente=function(partida){
+        var nick=partida.turno.nick;            
+        var indice=partida.ordenTurno.indexOf(nick);            
+        var siguiente=(indice-1)%(Object.keys(partida.jugadores).length);
+        if (siguiente<0) {siguiente=Object.keys(partida.jugadores).length-1}
+        var jugador=partida.jugadores[partida.ordenTurno[siguiente]];
+        return jugador;
     }
 }
 
@@ -376,7 +503,7 @@ function Bloqueo(valor,color){
     this.color=color;
     this.valor=valor;
     this.comprobarEfecto=function(partida){
-        
+        partida.bloquearSiguiente();
     }    
 }
 
@@ -403,6 +530,14 @@ function Comodin4(valor){
     this.comprobarEfecto=function(partida){
         
     }
+}
+
+function Resultado(prop,ganador,puntos,numJug){
+    this.propietario=prop;
+    this.ganador=ganador;
+    this.puntos=puntos;
+    this.numeroJugadores=numJug;
+
 }
 
 

@@ -4,7 +4,7 @@ describe("El juego del UNO...", function() {
   var juego;
 
   beforeEach(function() {
-    juego=new modelo.Juego();
+    juego=new modelo.Juego(true);
     juego.agregarJugador("ana");
     juego.agregarJugador("pepe");
     juego.agregarJugador("luis");
@@ -116,16 +116,81 @@ describe("El juego del UNO...", function() {
       expect(partida.cartaActual).toBeDefined();
     });
 
+    it("Ana juega carta",function(){
+
+    });
+
     it("Ana roba una carta",function(){
       expect(ju1.mano.length).toEqual(3);
       ju1.robar(1);
       expect(ju1.mano.length).toEqual(4);
-    })
+    });
 
-    it("Ana abndona partida",function(){
+    it("Ana juega una carta de Bloqueo, pepe pierde el turno",function(){
+      var carta=ju1.mano[0];
+
+      while (!carta || carta.tipo!="bloqueo"){
+        carta=ju1.mano.find(function(el){ return el.tipo=="bloqueado"})
+        ju1.robar(1);
+      }
+      expect(carta.tipo).toEqual("bloqueo");
+
+      var ind=ju1.mano.indexOf(carta);
+      expect(ju1.mano[ind].tipo).toEqual("bloqueo");
+      partida.cartaActual.color=carta.color;
+      expect(partida.turno.nick).toEqual(ju1.nick);
+      ju1.jugarCarta(ind);
+      expect(partida.cartaActual.tipo).toEqual("bloqueo");
+      expect(partida.turno.nick).toEqual(ju1.nick);
+
+    });
+
+    it("Ana abandona partida",function(){
       expect(partida.fase.nombre).toBe("jugando");
       ju1.abandonarPartida();
       expect(partida.fase.nombre).toBe("final");
-    })
+    });
   });
+
+  describe("Ana crea una partida de 3 jugadores...", function() {
+    var ju1;
+    var partida;
+
+    it("Condiciones iniciales",function(){
+      expect(partida.mazo.length.toEqual(22));
+    
+      var carta=ju1.mano[0];
+
+      while (!carta || carta.tipo!="bloqueo"){
+        carta=ju1.mano.find(function(el){ return el.tipo=="bloqueado"})
+        ju1.robar(1);
+      }
+      expect(carta.tipo).toEqual("bloqueo");
+
+      var ind=ju1.mano.indexOf(carta);
+      expect(ju1.mano[ind].tipo).toEqual("bloqueo");
+      partida.cartaActual.color=carta.color;
+      expect(partida.turno.nick).toEqual(ju1.nick);
+      ju1.jugarCarta(ind);
+      expect(partida.cartaActual.tipo).toEqual("bloqueo");
+      expect(ju1.mano.length).toEqual(num-1);
+      expect(partida.turno.nick).toEqual(ju3.nick);
+      expect(ju2.estado.nombre).toEqual("normal");
+    }); 
+
+    beforeEach(function(){
+      ju1=juego.usuarios["ana"];
+      partida=ju1.crearPartida(3);
+      ju2=juego.usuarios["pepe"];
+      ju3=juego.usuarios["luis"];
+      ju2.unirApartida(partida.codigo);
+      ju3.unirApartida(partida.codigo);
+      ju1.manoInicial();
+      ju2.manoInicial();
+      ju3.manoInicial();
+    });
+
+
+
+  }
 });

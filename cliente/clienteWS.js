@@ -1,4 +1,4 @@
-const { Juego } = require("../servidor/modelo");
+const { Juego } =require("../servidor/modelo");
 
 function ClienteWS(){
     this.socket;
@@ -37,7 +37,7 @@ function ClienteWS(){
         this.socket.emit("pasarTurno",this.nick);
         
     }
-    this.oabandonarPartida=function(){
+    this.abandonarPartida=function(){
         this.socket.emit("abandonarPartida",this.nick);
     }
     this.cerrarSesion=function(){
@@ -64,7 +64,7 @@ function ClienteWS(){
         })
         this.socket.on("nuevaPartida", function(data){
             if(!cli.codigo && cli.nick){
-                ui.mostrarListaPartidas(data);
+                ui.mostrarPartidasDisponibles(data);
             }
         })
         this.socket.on("pedirCartas",function(data){

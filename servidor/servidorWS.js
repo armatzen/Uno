@@ -6,6 +6,11 @@ function ServidorWS(){
 	this.enviarATodos=function(io,codigo,mensaje,datos){
 		io.sockets.in(codigo).emit(mensaje,datos)
 	}
+
+	this.enviarATodosMenosRemitente=function(socket, nombre, mensaje,datos){
+		socket.to(nombre).emit(mensaje,datos)
+	}
+
 	this.enviarGlobal=function(socket,mensaje,datos){
 		socket.broadcast.emit(mensaje,datos)
 	}
@@ -25,7 +30,7 @@ function ServidorWS(){
 						res.codigo=ju1.codigoPartida;
 						socket.join(res.codigo);
 						cli.enviarAlRemitente(socket,"partidaCreada",res);
-						var lista=obtenerPartidasDisponibles();
+						var lista=juego.obtenerPartidasDisponibles();
 						cli.enviarGlobal(socket,"nuevaPartida",lista);
 					}
 					else{
@@ -51,7 +56,7 @@ function ServidorWS(){
 						cli.enviarAlRemitente(socket,"unidoAPartida",res);
 						if (partida.fase.nombre=="jugando"){
 							cli.enviarATodos(io,codigo,"pedirCartas",{});
-							var lista=cli.obtenerPartidasDisponibles();
+							var lista=obtenerPartidasDisponibles();
 							cli.enviarATodos(io,"nuevaPartida",lista)
 						}
 					}
@@ -140,7 +145,7 @@ function ServidorWS(){
 					var partida=juego.partidas[codigo];
 					if (partida){
 						ju1.abandonarPartida();
-						cli.enviarATodos(io,codigo,"jugadorAbandona",{});
+						cli.enviarATodosMenosRemitente(socket, ju1.nick,"jugadorAbandona",{});
 					}
 					ju1.cerrarSesion();
 					cli.enviarAlRemitente(socket,"usuarioEliminado",{})

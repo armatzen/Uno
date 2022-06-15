@@ -4,7 +4,7 @@ const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey("XXXXXXXXXXXXXXX")//process.env.SENDGRID_API_KEY
 
 var url ="http://127.0.0.1:5000/"; //URL donde encadenamos la confirmación de usuario
-var urld="https://miUrldelUNOdeHeroku";
+var urld="https://juego--uno.herokuapp.com/";
 
 module.exports.enviarEmailConfirmacion=function(direccion,key){
     //Construir el Email según quiere sendgrid

@@ -8,99 +8,93 @@ function ClienteRest(){
                 if (data.email!="nook"){
                     //mostrarLogin
                     console.log(data.email);
-                    ws.nick=data.nick;
-                    rest.obtenerListaPartidas();
+                    iu.mostrarLogin();
                 }
                 else{
-                    console.log("No se ha podido registrar")
+                    console.log("No se ha podido registrar");
+                    iu.mostrarModal("La cuenta ya existe");
                 }
             },
             //contentType:'application/json',
             dataType:'json'
         });
     }
-
     this.loginUsuario=function(email,clave){
+        var cli=this;
         $.ajax({
             type:'POST',
-            url:'/registrarUsuario',
+            url:'/loginUsuario',
             data:{"email":email,"clave":clave},
             success:function(data){
-                if (data.email!="nook"){
-                    //mostrarLogin
-                    console.log(data.email);
+                if (data.nick!="nook"){
                     ws.nick=data.nick;
-                    rest.obtenerListaPartidas();
+                    $.cookie("nick",ws.nick);
+                    $('#sif').remove();
+                    iu.mostrarHome(data);
+                    cli.obtenerPartidasDisponibles();
                 }
                 else{
-                    iu.modal("Usuario o clave incorrecto")
+                    //iu.mostrarModal("Usuario o clave incorrectos");
+                    //iu.mostrarAgregarJugador();
+                    iu.mostrarLogin(true);
                 }
             },
             //contentType:'application/json',
             dataType:'json'
         });
     }
-
-
     this.agregarJugador=function(nick){
-        $.getJSON("/agregarJugador/"+nick,function(data){
-            //Se ejecuta cuando conteste el servidor
+        var cli=this;
+        //$.getJSON("/agregarJugador/"+nick,function(data){
+        $.getJSON("/auth/google",function(data){            
+            //se ejecuta cuando conteste el servidor
             console.log(data);
-            if(data.nick!=-1){
+            if (data.nick!=-1){
                 ws.nick=data.nick;
-                //11.11
-                $.cookie("nick",data.nick);
-                rest.obtenerListaPartidas();
-                iu.mostrarCrearPartida(ws.nick);
-                
+                $.cookie("nick",ws.nick);
+                iu.mostrarHome(data);
             }
             else{
-                iu.mostrarModal("El nick: "+nick+" esta en uso");
+                iu.mostrarModal("El nick ya está en uso");
                 iu.mostrarAgregarJugador();
             }
         })
-        //Sigue la ejecucion sin esperar
-        //mostrar una ruleta
     }
-    
-    this.crearPartida=function(nick,numJug){
 
-        $.getJSON("/crearPartida/"+nick+"/"+numJug,function(data){
-            //Se ejecuta cuando conteste el servidor
+    this.crearPartida=function(num,nick){
+        $.getJSON("/crearPartida/"+num+"/"+nick,function(data){
             console.log(data);
-
         })
-        //Sigue la ejecucion sin esperar
-        //mostrar una ruleta
     }
-
     this.obtenerListaPartidas=function(){
-		$.getJSON("/obtenerListaPartidas",function(data){
-			console.log(data);
+        $.getJSON("/obtenerListaPartidas",function(data){
+            console.log(data);
             //iu.mostrarListaPartidas(data);
-		})
-	}
-
+        })
+    }
     this.obtenerPartidasDisponibles=function(){
-		$.getJSON("/obtenerPartidasDisponibles",function(data){
-			console.log(data);
-            iu.mostrarPartidasDisponibles(data);
-		})
-	}
-
+        $.getJSON("/obtenerPartidasDisponibles",function(data){
+            console.log(data);
+               iu.mostrarListaPartidas(data);
+        })
+    }
     this.obtenerTodosResultados=function(){
-		$.getJSON("/obtenerTodosResultados",function(data){
-			console.log(data);
+        $.getJSON("/obtenerTodosResultados",function(data){
+            console.log(data);
             //iu.mostrarListaResultados(data);
-		})
-	}
-
+        })
+    }
     this.obtenerResultados=function(nick){
-		$.getJSON("/obtenerResultados/"+nick,function(data){
-			console.log(data);
+        $.getJSON("/obtenerResultados/"+nick,function(data){
+            console.log(data);
             //iu.mostrarListaResultados(data);
-		})
-	}
-
-
+        })
+    }
+    this.cerrarSesion=function(){
+        $.getJSON("/cerrarSesion",function(data){
+            console.log(data);          
+            //iu.mostrarAgregarJugador();
+            //iu.mostrarListaResultados(data);
+        })
+    }
 }

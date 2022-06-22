@@ -39,7 +39,7 @@ function CAD(){
                 callback([]);
             }
             else{
-                callback(datos)
+                callback(datos);
             }
         });
     }
@@ -68,9 +68,9 @@ function CAD(){
     this.conectar=function(callback){
         var cad=this;
 
-        mongo.connect("mongodb+srv://admin:admin@juego-uno.wd5vr.mongodb.net/Juego-Uno?retryWrites=true&w=majority",function(err,db){
+        mongo.connect("mongodb+srv://admin:admin@juego-uno.wd5vr.mongodb.net/?retryWrites=true&w=majority",function(err,db){
             if(err){
-                console.log("No se pudo conectar");
+                console.log("No se pudo conectar a la base de datos");
             }
             else{
                 console.log("Conectado a MongoDB");

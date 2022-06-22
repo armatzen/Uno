@@ -71,7 +71,6 @@ function ClienteWS(){
             iu.mostrarRivales(lista);
         })
         this.socket.on("pedirCartas",function(data){
-            //console.log("pedirCartas");
             cli.manoInicial();
         });
         this.socket.on("mano",function(data){

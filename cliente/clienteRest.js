@@ -69,7 +69,6 @@ function ClienteRest(){
     this.obtenerListaPartidas=function(){
         $.getJSON("/obtenerListaPartidas",function(data){
             console.log(data);
-            //iu.mostrarListaPartidas(data);
         })
     }
     this.obtenerPartidasDisponibles=function(){
@@ -81,20 +80,16 @@ function ClienteRest(){
     this.obtenerTodosResultados=function(){
         $.getJSON("/obtenerTodosResultados",function(data){
             console.log(data);
-            //iu.mostrarListaResultados(data);
         })
     }
     this.obtenerResultados=function(nick){
         $.getJSON("/obtenerResultados/"+nick,function(data){
             console.log(data);
-            //iu.mostrarListaResultados(data);
         })
     }
     this.cerrarSesion=function(){
         $.getJSON("/cerrarSesion",function(data){
             console.log(data);          
-            //iu.mostrarAgregarJugador();
-            //iu.mostrarListaResultados(data);
         })
     }
 }

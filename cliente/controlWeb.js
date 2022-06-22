@@ -273,23 +273,27 @@ function ControlWeb(){
         var valor;
         $('#carta').remove();
         var cadena='<div id="carta"><h3>Carta actual:</h3>';
+ 
         cadena=cadena+'<div class="column"><div class="card text-center">';
         cadena=cadena+'<div class="card-body">';
         valor=carta.valor;
+        color=carta.color;
         if (carta.tipo=="cambio"){
             valor="<>";
         }
         if (carta.tipo=="bloqueo"){
             valor="blq";
         }
-        cadena=cadena+'<h3 class="card-text" >'+valor+'</h3>';
+        cadena=cadena+'<h3 class="card-text" >'+valor+" "+color+'</h3>';
         if (carta.color=="yellow"){
                 textColor="black";
             }
             else{
                 textColor="white";
             }
+            console.log("La carta es:"+carta.nombre);
             cadena=cadena+'<p style="background-color:'+carta.color+';color:'+textColor+';">num</p>';       
+                cadena=cadena+'<img src="cliente\cartas\"+carta.nombre+".png" alt="Elva dressed as a fairy">'
         cadena=cadena+'</div></div></div></div>';
         $('#'+id).append(cadena);
     }

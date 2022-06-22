@@ -56,7 +56,7 @@ function ServidorWS(){
 						cli.enviarAlRemitente(socket,"unidoAPartida",res);
 						if (partida.fase.nombre=="jugando"){
 							cli.enviarATodos(io,codigo,"pedirCartas",{});
-							var lista=obtenerPartidasDisponibles();
+							var lista=juego.obtenerPartidasDisponibles();
 							cli.enviarATodos(io,"nuevaPartida",lista)
 						}
 					}
@@ -92,7 +92,6 @@ function ServidorWS(){
 					var codigo=ju1.codigoPartida;
 					var partida=juego.partidas[codigo];
 					var nickTurno=partida.turno.nick;
-					//cli.enviarAlRemitente(socket,"turno",{"turno":nickTurno,"cartaActual":partida.cartaActual});
 					cli.enviarATodos(io,codigo,"turno",{"turno":nickTurno,"cartaActual":partida.cartaActual});
 					if (partida.fase.nombre=="final"){
 							cli.enviarATodos(io,codigo,"final",{"ganador":nickTurno});

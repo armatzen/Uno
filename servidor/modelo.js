@@ -281,7 +281,7 @@ function Partida(codigo,jugador,numJug){
 		return Object.keys(this.jugadores).length;
 	}
     this.crearMazo=function(){
-        var colores=["azul"]//,"amarillo","verde","rojo"];
+        var colores=["azul","amarillo","verde","rojo"];
         for (i=0;i<colores.length;i++){
             this.mazo.push(new Numero(0,colores[i]));
         }
@@ -296,8 +296,8 @@ function Partida(codigo,jugador,numJug){
             //this.mazo.push(new Cambio(20,colores[j]));
         }
         for(j=0;j<colores.length;j++){
-            this.mazo.push(new Bloqueo(18,colores[j]));
-            this.mazo.push(new Bloqueo(18,colores[j]));
+            //this.mazo.push(new Bloqueo(18,colores[j]));
+            //this.mazo.push(new Bloqueo(18,colores[j]));
         }
         // for(j=0;j<colores.length;j++){
         //     this.mazo.push(new Mas2(19,colores[j]));

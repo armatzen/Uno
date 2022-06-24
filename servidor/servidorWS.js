@@ -92,8 +92,6 @@ function ServidorWS(){
 					var codigo=ju1.codigoPartida;
 					var partida=juego.partidas[codigo];
 					var nickTurno=partida.turno.nick;
-					if (ju1.mano.length == 1)
-
 					cli.enviarATodos(io,codigo,"turno",{"turno":nickTurno,"cartaActual":partida.cartaActual});
 					if (partida.fase.nombre=="final"){
 							cli.enviarATodos(io,codigo,"final",{"ganador":nickTurno});
@@ -115,6 +113,17 @@ function ServidorWS(){
 				}
 			});
 
+			socket.on("meQuedaUna",function(nick){
+				var ju1=juego.usuarios[nick];
+				if (ju1.mano.length == 1){
+					var codigo=ju1.codigoPartida;
+					cli.enviarATodos(io,codigo,"leQuedaUna",{"nick":ju1.nick});
+				}
+				else{
+					cli.enviarAlRemitente(socket,"fallo","Te quedan mas de una carta");	
+				}
+			});
+
 			socket.on("pasarTurno",function(nick){
 				var ju1=juego.usuarios[nick];
 				if (ju1){
@@ -122,6 +131,7 @@ function ServidorWS(){
 					var codigo=ju1.codigoPartida;
 					var partida=juego.partidas[codigo];
 					var nickTurno=partida.turno.nick;
+					console.log()
 					cli.enviarATodos(io,codigo,"turno",{"turno":nickTurno,"cartaActual":partida.cartaActual});
 				}
 				else{
@@ -129,7 +139,7 @@ function ServidorWS(){
 				}
 			});
 
-			socket.on("abandonarPartida",function(nick){
+			socket.on("abandonar",function(nick){
 				var ju1=juego.usuarios[nick];
 				if (ju1){
 					ju1.abandonarPartida();

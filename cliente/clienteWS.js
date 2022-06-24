@@ -78,12 +78,11 @@ function ClienteWS(){
             iu.quitarEsperando();
             iu.mostrarControl({nick:cli.nick,codigo:cli.codigo},"2");
             iu.mostrarRobar();
-            iu.mostrarMeQueda1();
+            if (data.length == 1) iu.mostrarMeQueda1();
             iu.mostrarMano(data);
         });
         this.socket.on("turno",function(data){
-            console.log(data);
-            iu.mostrarCarta(data.cartaActual);
+            iu.mostrarCarta(data.cartaActual,"actual");
             cli.meToca=data.turno==cli.nick;
             iu.mostrarTurno(cli.meToca);
         });
@@ -104,6 +103,10 @@ function ClienteWS(){
         });
         this.socket.on("jugadorAbandona",function(){
             iu.mostrarModal("Un jugador ha abandonado el juego");
+            iu.abandonar();
+        });
+        this.socket.on("usuarioEliminado",function(){
+            iu.mostrarModal("Has cerrado sesion");
             iu.abandonar();
         });
         this.socket.on("leQuedaUna",function(data){

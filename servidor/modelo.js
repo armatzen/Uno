@@ -135,9 +135,10 @@ function Juego(test){
     }
 
     this.insertarResultado=function(resultado){
-        this.cad.encontrarTodosResultados(resultado,function(res){
+        this.cad.insertarResultado(resultado,function(res){
             console.log(res);
         });
+
     }
 
     
@@ -171,11 +172,15 @@ function Jugador(nick,juego){
         this.juego.unirAPartida(codigo,nick);
     }
     this.robar=function(num){
-            var partida=this.obtenerPartida(this.codigoPartida);
-            if(partida.turno.nick){
-                var robadas=partida.dameCartas(num);
-                this.mano=this.mano.concat(robadas);
-            }
+        var partida=this.obtenerPartida(this.codigoPartida);
+        if (partida.mazo.length < num){
+            partida.crearMazo();
+        }
+        if(partida.turno.nick==this.nick || num > 1){
+            var robadas=partida.dameCartas(num);
+            this.mano=this.mano.concat(robadas);
+        }
+
             
     }
     this.manoInicial=function(){
@@ -228,14 +233,7 @@ function Jugador(nick,juego){
         var resultado=new Resultado(prop,this.nick,this.puntos,numJug);
         this.juego.insertarResultado(resultado);
     }
-    this.puedoJugar=function(carta){
-        for (var c in mano){
-            if (c.nombre==carta.nombre){
-                return true;
-            }
-        }
-        return false;
-    }
+    
 }
 //Estado
 function Normal(){
@@ -250,7 +248,6 @@ function Bloqueado(){
     this.recibeTurno=function(partida,jugador){
         jugador.pasarTurno();
         jugador.estado=new Normal();
-        console.log(this.jugador.nick+" Estoy bloqueado") 
     }
 }
 
@@ -296,17 +293,17 @@ function Partida(codigo,jugador,numJug){
             //this.mazo.push(new Cambio(20,colores[j]));
         }
         for(j=0;j<colores.length;j++){
-            //this.mazo.push(new Bloqueo(18,colores[j]));
+            this.mazo.push(new Bloqueo(18,colores[j]));
             //this.mazo.push(new Bloqueo(18,colores[j]));
         }
-        // for(j=0;j<colores.length;j++){
+        for(j=0;j<colores.length;j++){
+            this.mazo.push(new Mas2(19,colores[j]));
         //     this.mazo.push(new Mas2(19,colores[j]));
-        //     this.mazo.push(new Mas2(19,colores[j]));
-        // }
-        // for (i=1;i<5;i++){
-        //     this.mazo.push(new Comodin(20));
-        //     this.mazo.push(new Comodin4(21));
-        // }
+        }
+        for (i=1;i<5;i++){
+            this.mazo.push(new Comodin(20));
+            this.mazo.push(new Comodin4(21));
+        }
     };
 
     this.asignarUnaCarta=function(){
@@ -367,7 +364,7 @@ function Partida(codigo,jugador,numJug){
     }
     this.comprobarCarta=function(carta){
         //comprobar que la carta que se puede jugar la carta, según la que hay en la mesa
-        return (this.cartaActual.valor==carta.valor || this.cartaActual.nombre == carta.nombre || this.cartaActual.color==carta.color || this.cartaActual == "comodin")
+        return (this.cartaActual.valor==carta.valor || this.cartaActual.nombre == carta.nombre || this.cartaActual.color==carta.color || this.cartaActual == "comodin" || this.cartaActual == "mas4");
     }
     this.cartaInicial=function(){
         this.cartaActual=this.asignarUnaCarta();
@@ -535,16 +532,11 @@ function Mas2(valor,color){
     this.valor=valor;
     this.nombre=color+this.tipo; 
     this.comprobarEfecto=function(partida){
-        //ju2.robar(2);
         var jugador=partida.direccion.obtenerSiguiente(partida);
-        if (jugador.puedoJugar(this)){
-            partida.monto += 2;
-        }
-        else{
-            jugador.robar(partida.monto + 2);
-            partida.bloquearSiguiente(this);
-            console.log('El jugador '+jugador+' ha robado '+partida.monto+' cartas.');
-        }
+        jugador.robar(2);
+        partida.bloquearSiguiente(this);
+        console.log('El jugador '+jugador.nick+' ha robado 2 cartas.');
+        
     }
 }
 function Comodin(valor){
@@ -552,8 +544,6 @@ function Comodin(valor){
     this.valor=valor;
     this.nombre=this.tipo;
     this.comprobarEfecto=function(partida){
-        //mostrar desplegable elegir color
-        //modal? o mostrar un desplegable?
     }
 }
 function Comodin4(valor){
@@ -564,13 +554,10 @@ function Comodin4(valor){
         //ju2.roba(4)
         //efecto.comodin
         var jugador=partida.direccion.obtenerSiguiente(partida);
-        if (jugador.puedoJugar(this)){
-            jugador.robar(partida.monto + 4);
+            jugador.robar(4);
             partida.bloquearSiguiente(this);
-        }
-        else{
-            partida.monto += 4;
-        }
+            console.log('El jugador '+jugador.nick+' ha robado 4 cartas.');
+        
     }
 }
 function Resultado(prop,ganador,puntos,numJug){

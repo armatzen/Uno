@@ -60,6 +60,19 @@ function ClienteRest(){
             }
         })
     }
+    this.comprobarUsuario=function(nick){
+        $.getJSON("/comprobarUsuario/"+nick,function(data){
+            console.log(data);
+            if (data=="nook"){
+                $.removeCookie("nick");
+            }
+            else{
+                ws.nick=$.cookie("nick");           
+                iu.mostrarHome({nick:ws.nick});
+                rest.obtenerPartidasDisponibles();
+            }
+        })
+    }
 
     this.crearPartida=function(num,nick){
         $.getJSON("/crearPartida/"+num+"/"+nick,function(data){

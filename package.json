@@ -15,7 +15,8 @@
     "passport-local": "^1.0.0",
     "require": "^2.4.20",
     "requirejs": "^2.3.6",
-    "socket.io": "^4.3.1"
+    "sendgrid": "^5.2.3",
+    "socket.io": "^4.5.1"
   },
   "devDependencies": {},
   "scripts": {

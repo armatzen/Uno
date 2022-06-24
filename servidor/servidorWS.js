@@ -26,7 +26,7 @@ function ServidorWS(){
 					var res={codigo:-1};
 					var partida=ju1.crearPartida(num);
 					if (partida){
-						console.log("Nueva partida de "+nick +" codigo: "+ju1.codigoPartida);
+						console.log("Nueva partida de "+nick +" codigo: "+ju1.codigoPartida+" numJug: "+partida.numJug);
 						res.codigo=ju1.codigoPartida;
 						socket.join(res.codigo);
 						cli.enviarAlRemitente(socket,"partidaCreada",res);
@@ -92,6 +92,8 @@ function ServidorWS(){
 					var codigo=ju1.codigoPartida;
 					var partida=juego.partidas[codigo];
 					var nickTurno=partida.turno.nick;
+					if (ju1.mano.length == 1)
+
 					cli.enviarATodos(io,codigo,"turno",{"turno":nickTurno,"cartaActual":partida.cartaActual});
 					if (partida.fase.nombre=="final"){
 							cli.enviarATodos(io,codigo,"final",{"ganador":nickTurno});
@@ -127,7 +129,7 @@ function ServidorWS(){
 				}
 			});
 
-			socket.on("abandonarPartida",function(){
+			socket.on("abandonarPartida",function(nick){
 				var ju1=juego.usuarios[nick];
 				if (ju1){
 					ju1.abandonarPartida();
@@ -137,7 +139,7 @@ function ServidorWS(){
 				}
 			});
 
-			socket.on("cerrarSesion",function(){
+			socket.on("cerrarSesion",function(nick){
 				var ju1=juego.usuarios[nick];
 				if (ju1){
 					var codigo=ju1.codigoPartida;

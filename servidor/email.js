@@ -1,4 +1,4 @@
-var sendgrid = require("sengrid")("clavexxx","paswordxxx");
+var sendgrid = require("sendgrid")("clavexxx","paswordxxx");
 
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey("XXXXXXXXXXXXXXX")//process.env.SENDGRID_API_KEY

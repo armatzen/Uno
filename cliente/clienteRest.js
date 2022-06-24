@@ -60,6 +60,19 @@ function ClienteRest(){
             }
         })
     }
+    this.comprobarUsuario=function(nick){
+        $.getJSON("/comprobarUsuario/"+nick,function(data){
+            console.log(data);
+            if (data=="nook"){
+                $.removeCookie("nick");
+            }
+            else{
+                ws.nick=$.cookie("nick");           
+                iu.mostrarHome({nick:ws.nick});
+                rest.obtenerPartidasDisponibles();
+            }
+        })
+    }
 
     this.crearPartida=function(num,nick){
         $.getJSON("/crearPartida/"+num+"/"+nick,function(data){
@@ -69,7 +82,6 @@ function ClienteRest(){
     this.obtenerListaPartidas=function(){
         $.getJSON("/obtenerListaPartidas",function(data){
             console.log(data);
-            //iu.mostrarListaPartidas(data);
         })
     }
     this.obtenerPartidasDisponibles=function(){
@@ -81,20 +93,16 @@ function ClienteRest(){
     this.obtenerTodosResultados=function(){
         $.getJSON("/obtenerTodosResultados",function(data){
             console.log(data);
-            //iu.mostrarListaResultados(data);
         })
     }
     this.obtenerResultados=function(nick){
         $.getJSON("/obtenerResultados/"+nick,function(data){
             console.log(data);
-            //iu.mostrarListaResultados(data);
         })
     }
     this.cerrarSesion=function(){
         $.getJSON("/cerrarSesion",function(data){
             console.log(data);          
-            //iu.mostrarAgregarJugador();
-            //iu.mostrarListaResultados(data);
         })
     }
 }

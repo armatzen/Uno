@@ -96,7 +96,6 @@ function ControlWeb(){
         $('#mUcC').remove();
         $('#mMQ1').remove();
         $('#abandonar').remove();
-        $('#salir').remove();
     }
     this.limpiarAbandonar=function(){
         $('#mAJ').remove();
@@ -126,14 +125,22 @@ function ControlWeb(){
         $('#spin').remove();
     }
     this.mostrarAbandonar=function(){
-        $('#abandonar').remove();
-        var cadena='<li id="abandonar"><a href="#" onclick="abandonar();">Abandonar</a></li>';
-        $('#navbar').append(cadena);
+        $('#bA').remove();
+        var cadena='<button id="bA"class="btn btn-primary mb-2 mr-sm-2">Abandonar</button>';
+        $('#abandonar').append(cadena);
+
+        $("#bA").on("click",function(){
+            abandonar();
+        })
     }
     this.mostrarSalir=function(){
-        $('#salir').remove();
-        var cadena='<li id="salir"><a href="#" onclick="salir();">Salir</a></li>';
-        $('#navbar').append(cadena);
+        $('#bS').remove();
+        var cadena='<button id="bS"class="btn btn-primary mb-2 mr-sm-2">Salir</button>';
+        $('#salir').append(cadena);
+
+        $("#bS").on("click",function(){
+            salir();
+        })
     }
     this.mostrarControl=function(data,num){
         $('#mC').remove();
@@ -153,7 +160,8 @@ function ControlWeb(){
             ws.codigo="";
             $.removeCookie("nick");
             iu.limpiar();
-            iu.mostrarLogin();
+            iu.mostrarAgregarJugador();
+            $('#salir').remove();
     }   
     this.abandonar=function(){          
             ws.codigo="";
@@ -273,59 +281,35 @@ function ControlWeb(){
         var valor;
         $('#carta').remove();
         var cadena='<div id="carta"><h3>Carta actual:</h3>';
-        cadena=cadena+'<div class="column"><div class="card text-center">';
-        cadena=cadena+'<div class="card-body">';
-        valor=carta.valor;
-        if (carta.tipo=="cambio"){
-            valor="<>";
-        }
-        if (carta.tipo=="bloqueo"){
-            valor="blq";
-        }
-        cadena=cadena+'<h3 class="card-text" >'+valor+'</h3>';
-        if (carta.color=="yellow"){
-                textColor="black";
-            }
-            else{
-                textColor="white";
-            }
-            cadena=cadena+'<p style="background-color:'+carta.color+';color:'+textColor+';">num</p>';       
-        cadena=cadena+'</div></div></div></div>';
-        $('#'+id).append(cadena);
+        cadena+='<div class="card bg-light" style="width:170px">';
+        cadena+='<div class="card-body text-center">';
+        cadena+='<a href="#" class="list-group-item list-group-item-action">';
+        cadena+='<img class="card-img-top" src="cliente/cartas/'+carta.nombre+'.png">'
+        cadena+='</a> <p class="card-text">'+carta.tipo+' '+carta.valor+' '+carta.color+'</p>';
+        cadena+='</div></div></div>';
+        $('#actual').append(cadena);
     }
     this.mostrarMano=function(lista){
         var textColor;
         var valor;
         $('#cartas').remove();
         var cadena='<div id="cartas"><h3>Tus cartas:</h3>';
-        
-        for(i=0;i<lista.length;i++){
-            valor=lista[i].valor;
-            if (lista[i].tipo=="cambio"){
-                valor="<>";
-            }
-            if (lista[i].tipo=="bloqueo"){
-                valor="bloq";
-            }
-            cadena=cadena+'<div class="column">';
-            cadena=cadena+'<div class="card card2 text-center" value="'+i+'">';
-            cadena=cadena+'<div class="card-body">';
-            cadena=cadena+'<h3 class="card-text">'+valor+'</h3>';
-            if (lista[i].color=="yellow"){
-                textColor="black";
-            }
-            else{
-                textColor="white";
-            }
-            cadena=cadena+'<p style="background-color:'+lista[i].color+';color:'+textColor+';">num</p>';
-            cadena=cadena+'</div></div></div>';
+        for (var i = 0; i < lista.length; i++) {
+            cadena+='<div class="column" value="'+i+'">';
+            cadena+='<div class="card bg-light" style="width:170px">';
+            cadena+='<div class="card-body text-center">';
+            cadena+='<a href="#" class="list-group-item list-group-item-action">';
+            cadena+='<img class="card-img-top" src="cliente/cartas/'+lista[i].nombre+'.png">'
+            cadena+='</a> <p class="card-text">'+lista[i].tipo+' '+lista[i].valor+' '+lista[i].color+'</p>';
+            cadena+='</div></div></div>';
         }
+        
         cadena=cadena+'</div>';
         $('#tablero').append(cadena);
 
-        $(".card").click(function(){
+        $(".column").click(function(){
             if (ws.meToca){
-                numero=$(this).attr("value");         
+                 var numero=$(this).attr("value");         
                 console.log("numero: "+numero);
                 ws.jugarCarta(numero);
             }
@@ -340,7 +324,9 @@ function ControlWeb(){
         $('#robar').append(cadena);
         $("#btnRobar").on("click",function(){           
             ws.robarCarta(1);
-        });     
+        }); 
+
+        iu.mostrarAbandonar();    
 
     }
     this.mostrarMeQueda1=function(){

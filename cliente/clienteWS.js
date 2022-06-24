@@ -71,7 +71,6 @@ function ClienteWS(){
             iu.mostrarRivales(lista);
         })
         this.socket.on("pedirCartas",function(data){
-            //console.log("pedirCartas");
             cli.manoInicial();
         });
         this.socket.on("mano",function(data){
@@ -84,7 +83,7 @@ function ClienteWS(){
         });
         this.socket.on("turno",function(data){
             console.log(data);
-            iu.mostrarCarta(data.cartaActual,"actual");
+            iu.mostrarCarta(data.cartaActual);
             cli.meToca=data.turno==cli.nick;
             iu.mostrarTurno(cli.meToca);
         });

@@ -53,7 +53,7 @@ function CAD(){
     }
 
     function insertar(coleccion,objeto,callback){
-        coleccion.insertOne(objecto, function(err,result){
+        coleccion.insertOne(objeto, function(err,result){
             if (err){
                 console.log("No se ha podido insertar")
             }

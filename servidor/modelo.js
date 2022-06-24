@@ -364,7 +364,7 @@ function Partida(codigo,jugador,numJug){
     }
     this.comprobarCarta=function(carta){
         //comprobar que la carta que se puede jugar la carta, según la que hay en la mesa
-        return (this.cartaActual.valor==carta.valor || this.cartaActual.nombre == carta.nombre || this.cartaActual.color==carta.color || this.cartaActual == "comodin" || this.cartaActual == "mas4");
+        return (this.cartaActual.valor==carta.valor || this.cartaActual.nombre == carta.nombre || this.cartaActual.color==carta.color || this.cartaActual.tipo == "comodin" || this.cartaActual.tipo == "mas4" || carta.tipo == "mas4" || carta.tipo == "comodin");
     }
     this.cartaInicial=function(){
         this.cartaActual=this.asignarUnaCarta();
